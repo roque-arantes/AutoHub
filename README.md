@@ -82,7 +82,7 @@
 <h2 align="center">📐 MER</h2>
 
 <p align="center">
-  <img src="docs/MER.png" alt="Diagrama MER" width="900px"/>
+  <img src="docs/MerDiagram.png" alt="Diagrama MER" width="900px"/>
 </p>
 
 ---
@@ -92,7 +92,7 @@
 ```
 AutoHub/
 ├── docs/
-│   └── MER.png
+│   └── MerDiagram.png
 ├── src/
 │   ├── AutoHub.API
 │   ├── AutoHub.Application
