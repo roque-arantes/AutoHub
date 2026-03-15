@@ -27,63 +27,89 @@
     </tr>
 </table>
 
+---
 
-
-<h2 align="center">Domínio Escolhido</h2>
-
-###
+<h2 align="center">🚗 Domínio Escolhido</h2>
 
 <p align="center">
-  O domínio escolhido para o projeto de uma WebAPI é o de uma concessionária com inclusão de uma oficina de automóveis. 
+  O domínio escolhido é o de uma <b>concessionária de veículos com oficina mecânica</b>.<br>
+  O sistema contempla dois módulos distintos: vendas de veículos do estoque e gestão de ordens de serviço da oficina.
 </p>
 
+---
 
+<h2 align="center">🗂️ Entidades Modeladas</h2>
 
-###
+<table align="center">
+    <tr>
+        <th>Entidade</th>
+        <th>Descrição</th>
+    </tr>
+    <tr><td>Marca</td><td>Fabricantes dos veículos (ex: Toyota, Honda)</td></tr>
+    <tr><td>Modelo</td><td>Modelos de cada marca (ex: Corolla, Civic)</td></tr>
+    <tr><td>Cliente</td><td>Clientes da concessionária e oficina</td></tr>
+    <tr><td>Funcionario</td><td>Vendedores e mecânicos da empresa</td></tr>
+    <tr><td>VeiculoCliente</td><td>Veículos dos clientes trazidos para reparo na oficina</td></tr>
+    <tr><td>VeiculoEstoque</td><td>Veículos disponíveis para venda na concessionária</td></tr>
+    <tr><td>Servico</td><td>Catálogo de serviços oferecidos pela oficina</td></tr>
+    <tr><td>Peca</td><td>Catálogo de peças utilizadas nos reparos</td></tr>
+    <tr><td>OrdemServico</td><td>Ordens de serviço abertas na oficina</td></tr>
+    <tr><td>OsServico</td><td>Tabela pivot — serviços executados em cada OS</td></tr>
+    <tr><td>OsPeca</td><td>Tabela pivot — peças utilizadas em cada OS</td></tr>
+    <tr><td>Venda</td><td>Registro das vendas de veículos do estoque</td></tr>
+</table>
 
-<h2 align="center">Quais Entidades foram Modeladas </h2>
+---
 
-###
-
-<p align="center">
-Foram modeladas as seguintes entidades:
-
-    - Marcas
-    - Modelos
-    - Clientes
-    - Funcionarios
-    - VeiculosClientes (Oficina)
-    - VeiculosEstoque (Concessionária)
-    - Servicos
-    - Pecas
-    - OrdemServico
-    - OsServiços
-    - OsPecas
-    - Vendas
-</p>
-
-
-<h2 align="center">Resumo dos Relacionamentos</h2>
-
-###
+<h2 align="center">🔗 Resumo dos Relacionamentos</h2>
 
 | Entidades | Cardinalidade | Tipo | Observação |
 |---|---|---|---|
-| Marcas → Modelos | 1:N | Não-identificador | Uma marca tem vários modelos |
-| Modelos → VeiculosCliente | 1:N | Não-identificador | Um modelo aparece em vários veículos de clientes |
-| Modelos → VeiculosEstoque | 1:N | Não-identificador | Um modelo aparece em vários veículos do estoque |
-| Clientes → VeiculosCliente | 1:N | Não-identificador | Um cliente pode ter vários veículos na oficina |
-| Clientes → Vendas | 1:N | Não-identificador | Um cliente pode fazer várias compras |
-| VeiculosCliente → OrdemServico | 1:N | Não-identificador | Um veículo pode ter múltiplas OS |
-| VeiculosEstoque → Vendas | 1:1 | Exclusiva | Um veículo do estoque é vendido apenas uma vez |
-| Funcionarios → OrdemServico | 1:N | Não-identificador | Um mecânico atende múltiplas OS |
-| Funcionarios → Vendas | 1:N | Não-identificador | Um vendedor faz múltiplas vendas |
-| OrdemServico ↔ Servicos | N:N | Identificador | Via OsServicos — linha sólida |
-| OrdemServico ↔ Pecas | N:N | Identificador | Via OsPecas — linha sólida |
+| Marca → Modelo | 1:N | Não-identificador | Uma marca tem vários modelos |
+| Modelo → VeiculoCliente | 1:N | Não-identificador | Um modelo aparece em vários veículos de clientes |
+| Modelo → VeiculoEstoque | 1:N | Não-identificador | Um modelo aparece em vários veículos do estoque |
+| Cliente → VeiculoCliente | 1:N | Não-identificador | Um cliente pode ter vários veículos na oficina |
+| Cliente → Venda | 1:N | Não-identificador | Um cliente pode fazer várias compras |
+| VeiculoCliente → OrdemServico | 1:N | Não-identificador | Um veículo pode ter múltiplas OS |
+| VeiculoEstoque → Venda | 1:1 | Exclusiva | Um veículo do estoque é vendido apenas uma vez |
+| Funcionario → OrdemServico | 1:N | Não-identificador | Um mecânico atende múltiplas OS |
+| Funcionario → Venda | 1:N | Não-identificador | Um vendedor faz múltiplas vendas |
+| OrdemServico ↔ Servico | N:N | Identificador | Via OsServico — linha sólida |
+| OrdemServico ↔ Peca | N:N | Identificador | Via OsPeca — linha sólida |
 
-- Um VeiculosEstoque só pode estar vinculado a UMA Venda (1:1). Ao vender, atualizar status para 'vendido'.
-- OrdemServico pertence a VeiculosCliente, nunca a VeiculosEstoque — domínios separados.
-- preco_cobrado em OsServicos e preco_unitario em OsPecas devem ser gravados como snapshot — preços podem mudar.
-- estoque_qtd em Pecas deve ser decrementado ao inserir registro em OsPecas.
-- Marca e modelo não são cadastrados diretamente nos veículos — são referenciados via id_modelo.
-- Um Funcionario pode atuar como Vendedor em Vendas e Mecânico em OrdemServico — o cargo define a função.
+---
+
+<h2 align="center">📐 MER</h2>
+
+<p align="center">
+  <img src="docs/MER.png" alt="Diagrama MER" width="900px"/>
+</p>
+
+---
+
+<h2 align="center">🏗️ Estrutura do Projeto</h2>
+
+```
+AutoHub/
+├── docs/
+│   └── MER.png
+├── src/
+│   ├── AutoHub.API
+│   ├── AutoHub.Application
+│   ├── AutoHub.Domain
+│   │   └── Entities/
+│   │       ├── Marca.cs
+│   │       ├── Modelo.cs
+│   │       ├── Cliente.cs
+│   │       ├── Funcionario.cs
+│   │       ├── VeiculoCliente.cs
+│   │       ├── VeiculoEstoque.cs
+│   │       ├── Servico.cs
+│   │       ├── Peca.cs
+│   │       ├── OrdemServico.cs
+│   │       ├── OsServico.cs
+│   │       ├── OsPeca.cs
+│   │       └── Venda.cs
+│   └── AutoHub.Infrastructure
+└── README.md
+```
