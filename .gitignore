@@ -19,3 +19,7 @@ riderModule.iml
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+# Arquivos do Banco de Dados
+*.db
+*.db-shm
+*.db-wal
