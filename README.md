@@ -1,27 +1,29 @@
-<h1 align="center">CP1 - (MER) e Criação do Projeto WebAPI </h1>
+<h1 align="center">AutoHub — Concessionária & Oficina Mecânica</h1>
 
-###
+<p align="center">
+  Projeto desenvolvido para as disciplinas de CP1 e CP2 — FIAP
+</p>
 
-<h2 align="center">📋Integrantes📋</h2>
+---
 
-###
+<h2 align="center">📋 Integrantes</h2>
 
 <table align="center">
     <tr>
         <td align="center">
-            <img src="https://avatars.githubusercontent.com/u/202198493?v=4" width="100px;" alt="Foto do Integrante Matheus Roque"/>
+            <img src="https://avatars.githubusercontent.com/u/202198493?v=4" width="100px;" alt="Matheus Roque"/>
             <br>
             <sub>
                 <b>Matheus Roque</b><br>
-                <b>Rm: 561959</b>
+                <b>RM: 561959</b>
             </sub>
         </td>
         <td align="center">
-            <img src="https://avatars.githubusercontent.com/u/200883157?s=400&u=4c0d649624f6736e702b60244099bdf4b887eda7&v=4" width="100px;" alt="Foto do Integrante Giovane dos Santos"/>
+            <img src="https://avatars.githubusercontent.com/u/200883157?s=400&u=4c0d649624f6736e702b60244099bdf4b887eda7&v=4" width="100px;" alt="Giovane dos Santos"/>
             <br>
             <sub>
                 <b>Giovane dos Santos</b><br>
-                <b>Rm: 561336</b>
+                <b>RM: 561336</b>
             </sub>
         </td>
     </tr>
@@ -61,28 +63,28 @@
 
 ---
 
-<h2 align="center">🔗 Resumo dos Relacionamentos</h2>
+<h2 align="center">🔗 Relacionamentos</h2>
 
-| Entidades | Cardinalidade | Tipo | Observação |
-|---|---|---|---|
-| Marca → Modelo | 1:N | Não-identificador | Uma marca tem vários modelos |
-| Modelo → VeiculoCliente | 1:N | Não-identificador | Um modelo aparece em vários veículos de clientes |
-| Modelo → VeiculoEstoque | 1:N | Não-identificador | Um modelo aparece em vários veículos do estoque |
-| Cliente → VeiculoCliente | 1:N | Não-identificador | Um cliente pode ter vários veículos na oficina |
-| Cliente → Venda | 1:N | Não-identificador | Um cliente pode fazer várias compras |
-| VeiculoCliente → OrdemServico | 1:N | Não-identificador | Um veículo pode ter múltiplas OS |
-| VeiculoEstoque → Venda | 1:1 | Exclusiva | Um veículo do estoque é vendido apenas uma vez |
-| Funcionario → OrdemServico | 1:N | Não-identificador | Um mecânico atende múltiplas OS |
-| Funcionario → Venda | 1:N | Não-identificador | Um vendedor faz múltiplas vendas |
-| OrdemServico ↔ Servico | N:N | Identificador | Via OsServico — linha sólida |
-| OrdemServico ↔ Peca | N:N | Identificador | Via OsPeca — linha sólida |
+| Entidades                     | Cardinalidade | Observação                                       |
+| ----------------------------- | ------------- | ------------------------------------------------ |
+| Marca → Modelo                | 1:N           | Uma marca tem vários modelos                     |
+| Modelo → VeiculoCliente       | 1:N           | Um modelo aparece em vários veículos de clientes |
+| Modelo → VeiculoEstoque       | 1:N           | Um modelo aparece em vários veículos do estoque  |
+| Cliente → VeiculoCliente      | 1:N           | Um cliente pode ter vários veículos na oficina   |
+| Cliente → Venda               | 1:N           | Um cliente pode fazer várias compras             |
+| VeiculoCliente → OrdemServico | 1:N           | Um veículo pode ter múltiplas OS                 |
+| VeiculoEstoque → Venda        | 1:1           | Um veículo do estoque é vendido apenas uma vez   |
+| Funcionario → OrdemServico    | 1:N           | Um mecânico atende múltiplas OS                  |
+| Funcionario → Venda           | 1:N           | Um vendedor faz múltiplas vendas                 |
+| OrdemServico ↔ Servico        | N:N           | Via tabela pivot OsServico                       |
+| OrdemServico ↔ Peca           | N:N           | Via tabela pivot OsPeca                          |
 
 ---
 
 <h2 align="center">📐 MER</h2>
 
 <p align="center">
-  <img src="docs/MerDiagram.png" alt="Diagrama MER" width="900px"/>
+  <img src="docs/MER.png" alt="Diagrama MER" width="900px"/>
 </p>
 
 ---
@@ -92,24 +94,66 @@
 ```
 AutoHub/
 ├── docs/
-│   └── MerDiagram.png
+│   └── MER.png
 ├── src/
-│   ├── AutoHub.API
-│   ├── AutoHub.Application
-│   ├── AutoHub.Domain
+│   ├── AutoHub.API/               → Endpoints, Program.cs, appsettings
+│   ├── AutoHub.Application/       → Interfaces de repositório (contratos)
+│   ├── AutoHub.Domain/            → Entidades do domínio
 │   │   └── Entities/
-│   │       ├── Marca.cs
-│   │       ├── Modelo.cs
-│   │       ├── Cliente.cs
-│   │       ├── Funcionario.cs
-│   │       ├── VeiculoCliente.cs
-│   │       ├── VeiculoEstoque.cs
-│   │       ├── Servico.cs
-│   │       ├── Peca.cs
-│   │       ├── OrdemServico.cs
-│   │       ├── OsServico.cs
-│   │       ├── OsPeca.cs
-│   │       └── Venda.cs
-│   └── AutoHub.Infrastructure
+│   └── AutoHub.Infrastructure/    → DbContext, Configurations, Migrations, Repositórios
+│       ├── Data/
+│       │   ├── ApplicationDbContext.cs
+│       │   ├── Configurations/    → Fluent API (1 arquivo por entidade)
+│       │   └── Migrations/
+│       └── Repositories/
 └── README.md
 ```
+
+---
+
+<h2 align="center">🗄️ CP2 — Persistência com EF Core</h2>
+
+### Banco de dados utilizado
+
+**SQLite** — banco em arquivo, sem necessidade de instalação, totalmente reproduzível.
+
+O arquivo `autohub.db` é gerado automaticamente na primeira execução via `db.Database.Migrate()`.
+
+### Como rodar o projeto
+
+**Pré-requisitos:** .NET 9 SDK instalado
+
+```bash
+# 1. Clonar o repositório
+git clone <url-do-repositorio>
+cd AutoHub
+
+# 2. Restaurar dependências
+dotnet restore
+
+# 3. Rodar a API
+dotnet run --project src/AutoHub.API
+```
+
+A API sobe em `http://localhost:5017` e o Swagger fica disponível em `http://localhost:5017/swagger`.
+
+> As migrations são aplicadas automaticamente ao subir o projeto. Não é necessário rodar `dotnet ef database update` manualmente.
+
+### Endpoints disponíveis
+
+| Método | Rota                | Descrição                             |
+| ------ | ------------------- | ------------------------------------- |
+| GET    | `/health`           | Verifica se a API está rodando        |
+| POST   | `/seed`             | Popula o banco com dados de exemplo   |
+| GET    | `/clientes`         | Lista todos os clientes               |
+| GET    | `/clientes/{id}`    | Busca um cliente pelo ID              |
+| GET    | `/ordens-servico`   | Lista OS com serviços e peças (N:N)   |
+| GET    | `/veiculos-estoque` | Lista veículos disponíveis para venda |
+
+### Decisões técnicas
+
+- **Repositório genérico** — `IRepository<T>` na camada Application, implementado por `Repository<T>` na Infrastructure, registrado via `AddScoped` no `Program.cs`
+- **Fluent API** — uma classe `IEntityTypeConfiguration<T>` por entidade, aplicadas via `ApplyConfigurationsFromAssembly`
+- **Índices únicos** mapeados em: `Marca.Nome`, `Cliente.Cpf`, `Funcionario.Matricula`, `VeiculoCliente.PlacaVeiculo`, `VeiculoEstoque.Chassis`
+- **PKs compostas** nas tabelas pivot `OsServico` e `OsPeca` via `HasKey(x => new { x.A, x.B })`
+- **Relacionamento 1:1** entre `VeiculoEstoque` e `Venda` via `HasOne/WithOne`
