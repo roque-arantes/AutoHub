@@ -1,8 +1,9 @@
+using AutoHub.Domain.Common;
+
 namespace AutoHub.Domain.Entities;
 
-public class Funcionario
+public class Funcionario : BaseEntity
 {
-    public Guid Id { get; set; }
     public string Nome { get; set; } = string.Empty;
     public string Matricula { get; set; } = string.Empty;
     public string Cargo { get; set; } = string.Empty;
@@ -12,7 +13,6 @@ public class Funcionario
     public DateTime DataAdmissao { get; set; }
     public decimal Salario { get; set; }
     public string Status { get; set; } = string.Empty;
-    
     
     // Tabelas Filhas
     public ICollection<OrdemServico> OrdemServicos { get; set; } = new List<OrdemServico>();
