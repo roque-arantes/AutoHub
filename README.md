@@ -1,7 +1,7 @@
 <h1 align="center">AutoHub — Concessionária & Oficina Mecânica</h1>
 
 <p align="center">
-  Projeto desenvolvido para as disciplinas de CP1, CP2 e CP3 — FIAP
+  Projeto desenvolvido para as disciplinas de CP1, CP2, CP3 e CP4 — FIAP
 </p>
 
 ---
@@ -94,23 +94,29 @@
 ```
 AutoHub/
 ├── docs/
-│   └── MerDiagram.png
+│   ├── MerDiagram.png
+│   ├── health-healthy.json         → Evidência de Health Check (200 OK)
+│   ├── health-unhealthy.json       → Evidência de Health Check com falha (503)
+│   └── logs-observability.txt      → Evidência de logs estruturados com TraceId
 ├── src/
-│   ├── AutoHub.Domain/            → Regras de negócio puras, entidades e exceções de domínio
-│   │   ├── Common/                → BaseEntity com Id Guid
-│   │   ├── Entities/              → Marca, Modelo, Cliente, VeiculoEstoque, etc.
-│   │   └── Exceptions/            → DomainException, ResourceNotFoundException, ConflictException
-│   ├── AutoHub.Application/       → Contratos de repositório, DTOs e serviços de aplicação
-│   │   ├── DTOs/                  → Request e Response DTOs para Clientes, Marcas, Veículos
-│   │   ├── Interfaces/            → IRepository<T>, IClienteService, IMarcaService, etc.
-│   │   └── Services/              → ClienteService, MarcaService, VeiculoEstoqueService
-│   ├── AutoHub.Infrastructure/    → EF Core, SQLite, DbContext, Migrations e Repositórios
-│   │   ├── Data/                  → ApplicationDbContext, Configurations (Fluent API), DataSeeder
-│   │   └── Repositories/          → Repository<T> genérico
-│   └── AutoHub.API/               → Controllers, Swagger OpenAPI com XML, Exception Handler
-│       ├── Controllers/           → ClientesController, MarcasController, VeiculosEstoqueController, SeedController
-│       ├── Exceptions/            → GlobalExceptionHandler (IExceptionHandler + RFC 7807)
-│       └── Extensions/            → SwaggerExtensions
+│   ├── AutoHub.Domain/             → Regras de negócio puras, entidades e exceções de domínio
+│   │   ├── Common/                 → BaseEntity com Id Guid
+│   │   ├── Entities/               → Marca, Modelo, Cliente, VeiculoEstoque, etc.
+│   │   └── Exceptions/             → DomainException, ResourceNotFoundException, ConflictException
+│   ├── AutoHub.Application/        → Contratos de repositório, DTOs e serviços de aplicação
+│   │   ├── DTOs/                   → Request e Response DTOs para Clientes, Marcas, Veículos
+│   │   ├── Interfaces/             → IRepository<T>, IClienteService, IMarcaService, etc.
+│   │   └── Services/               → ClienteService, MarcaService, VeiculoEstoqueService
+│   ├── AutoHub.Infrastructure/     → EF Core, SQLite, DbContext, Migrations e Repositórios
+│   │   ├── Data/                   → ApplicationDbContext, Configurations (Fluent API), DataSeeder
+│   │   └── Repositories/           → Repository<T> genérico
+│   └── AutoHub.API/                → Controllers, Swagger, Health Checks e Exception Handler
+│       ├── Controllers/            → ClientesController, MarcasController, VeiculosEstoqueController, SeedController
+│       ├── Exceptions/             → GlobalExceptionHandler (IExceptionHandler + RFC 7807)
+│       └── Extensions/             → SwaggerExtensions, HealthCheckExtensions
+├── tests/
+│   ├── AutoHub.Domain.Tests/       → Testes unitários do domínio sem mock (xUnit, Fact, Theory)
+│   └── AutoHub.Application.Tests/  → Testes de serviços de aplicação com Mock de repositório (Moq)
 └── README.md
 ```
 
@@ -120,113 +126,176 @@ AutoHub/
 
 ### Pré-requisitos
 - **.NET 9 SDK** instalado.
-- O banco de dados utilizado é o **SQLite** (banco local em arquivo `autohub.db`), totalmente autocontido e sem necessidade de instalar SGBDs externos.
+- Banco de dados: **SQLite** (gerado automaticamente no arquivo `autohub.db`).
 
-### Execução passo a passo
+### Execução da API
 ```bash
-# 1. Restaurar dependências da solution
+# 1. Restaurar dependências
 dotnet restore
 
-# 2. Executar o projeto da API
+# 2. Executar a API
 dotnet run --project src/AutoHub.API
 ```
 
-A API estará disponível em:
-- **URL Base:** `http://localhost:5017`
+Endpoints principais:
 - **Swagger UI:** `http://localhost:5017/swagger`
+- **Health Check:** `http://localhost:5017/health`
 
-> **Nota:** As migrations do banco de dados são aplicadas automaticamente no início da aplicação (`db.Database.Migrate()`).
+### Execução dos Testes Automatizados
+```bash
+# Executar todos os testes da solução
+dotnet test
+```
 
 ---
 
-<h2 align="center">📌 CP3 — Evolução da API, Swagger e Tratamento Global</h2>
+<h2 align="center">📌 CP3 — API REST, Swagger, Repositório e Erros Globais</h2>
 
-### 1. Controllers e DTOs (Clean Architecture)
-A camada **API** não acessa o `DbContext` diretamente. Toda a comunicação ocorre via **DTOs de entrada e saída**, passando por serviços de aplicação e pelo repositório genérico `IRepository<T>`:
+### 1. Controllers e DTOs
+A API opera sobre DTOs de entrada e saída, desacoplada do `DbContext`:
 
 | Recurso | Método | Rota | Descrição |
 | --- | --- | --- | --- |
 | **Seed** | POST | `/api/seed` | Popula o banco com dados de exemplo |
 | **Clientes** | GET | `/api/clientes` | Lista todos os clientes |
 | **Clientes** | GET | `/api/clientes/{id}` | Busca cliente por ID (GUID) |
-| **Clientes** | POST | `/api/clientes` | Cria um novo cliente com validação de CPF e campos |
-| **Clientes** | PUT | `/api/clientes/{id}` | Atualiza dados de um cliente existente |
-| **Clientes** | DELETE | `/api/clientes/{id}` | Remove um cliente |
-| **Marcas** | GET | `/api/marcas` | Lista todas as marcas |
-| **Marcas** | GET | `/api/marcas/{id}` | Busca marca por ID (GUID) |
-| **Marcas** | POST | `/api/marcas` | Cadastra nova marca de veículos |
-| **Marcas** | PUT | `/api/marcas/{id}` | Atualiza dados da marca |
-| **Marcas** | DELETE | `/api/marcas/{id}` | Remove uma marca |
+| **Clientes** | POST | `/api/clientes` | Cria novo cliente com validação de CPF |
+| **Clientes** | PUT | `/api/clientes/{id}` | Atualiza dados do cliente |
+| **Clientes** | DELETE | `/api/clientes/{id}` | Remove cliente |
+| **Marcas** | GET | `/api/marcas` | Lista marcas |
+| **Marcas** | GET | `/api/marcas/{id}` | Busca marca por ID |
+| **Marcas** | POST | `/api/marcas` | Cadastra nova marca |
+| **Marcas** | PUT | `/api/marcas/{id}` | Atualiza marca |
+| **Marcas** | DELETE | `/api/marcas/{id}` | Remove marca |
 | **Veículos Estoque** | GET | `/api/veiculos-estoque` | Lista veículos à venda |
-| **Veículos Estoque** | GET | `/api/veiculos-estoque/{id}` | Busca veículo em estoque por ID |
+| **Veículos Estoque** | GET | `/api/veiculos-estoque/{id}` | Busca veículo por ID |
 | **Veículos Estoque** | POST | `/api/veiculos-estoque` | Cadastra veículo validando modelo e chassi |
 | **Veículos Estoque** | PUT | `/api/veiculos-estoque/{id}` | Atualiza veículo em estoque |
 | **Veículos Estoque** | DELETE | `/api/veiculos-estoque/{id}` | Remove veículo do estoque |
-| **Health** | GET | `/health` | Verificação de disponibilidade da aplicação |
+| **Health** | GET | `/health` | Relatório de disponibilidade operacional da API e banco |
 
----
-
-### 2. Swagger / OpenAPI Completo
-- **Metadados:** Configurados com título corporativo, versão `v1`, descrição e informações de contato.
-- **Comentários XML:** Ativados via `<GenerateDocumentationFile>true</GenerateDocumentationFile>` no projeto `AutoHub.API` e carregados via `IncludeXmlComments`.
-- **Respostas Tipadas:** Cada action possui atributos `[ProducesResponseType]` para respostas de sucesso (`200 OK`, `201 Created`, `204 NoContent`) e respostas de erro (`400 BadRequest`, `404 NotFound`, `409 Conflict`).
-
----
+### 2. Swagger Completo com Comentários XML
+- Metadados corporativos, versionamento `v1` e documentação de ações e schemas.
+- XML Comments ativados via `<GenerateDocumentationFile>true</GenerateDocumentationFile>` e vinculados ao Swagger.
+- Respostas HTTP tipadas com `[ProducesResponseType]` (200, 201, 204, 400, 404, 409, 500).
 
 ### 3. Repositório Genérico Tipado
-- Interface `IRepository<T>` localizada na camada **Application**, com restrição `where T : BaseEntity`.
-- Implementação `Repository<T>` na camada **Infrastructure** utilizando `ApplicationDbContext` com:
-  - `GetAllAsync()` (com `.AsNoTracking()` para otimização de leitura)
-  - `GetByIdAsync(Guid id)`
-  - `ExistsByIdAsync(Guid id)`
-  - `FirstOrDefaultAsync(predicate)`
-  - `FindAsync(predicate)`
-  - `AddAsync(entity)`, `Update(entity)`, `Delete(entity)`
-  - `SaveChangesAsync()`
-- Injeção de dependência registrada no `Program.cs`:
-  ```csharp
-  builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-  ```
+- Contrato `IRepository<T>` na camada **Application**, com restrição `where T : BaseEntity`.
+- Implementação `Repository<T>` na **Infrastructure** com EF Core, `.AsNoTracking()` e `ExistsByIdAsync()`.
+- Injeção de dependência via `AddScoped(typeof(IRepository<>), typeof(Repository<>))`.
+
+### 4. Tratamento Global de Exceções (RFC 7807)
+- Middleware centralizado implementando `IExceptionHandler` em `GlobalExceptionHandler.cs`.
+- Retorno padronizado em formato **RFC 7807 (`application/problem+json`)**.
+
+| Exceção | Status HTTP | RFC 7807 Title | Cenário |
+| --- | --- | --- | --- |
+| `ResourceNotFoundException` | **404 Not Found** | Recurso não encontrado | Registro inexistente por ID |
+| `KeyNotFoundException` | **404 Not Found** | Recurso não encontrado | Chave informada inexistente |
+| `ConflictException` | **409 Conflict** | Conflito de dados | CPF, chassi ou marca duplicada |
+| `DomainException` | **400 Bad Request** | Violação de regra de negócio | Invariante de domínio inválida |
+| `ArgumentException` | **400 Bad Request** | Parâmetro inválido | Dados de entrada malformados |
+| `Exception` (inesperada) | **500 Internal Server Error** | Erro interno no servidor | Erros não tratados (ocultos fora de Dev) |
 
 ---
 
-### 4. Tratamento Global de Erros (GlobalExceptionHandler)
-- Implementação da interface nativa `IExceptionHandler` do ASP.NET Core (.NET 9) em `AutoHub.API/Exceptions/GlobalExceptionHandler.cs`.
-- Retorno padronizado no formato **RFC 7807** (`application/problem+json`, `ProblemDetails`).
-- Registro no pipeline do `Program.cs` com `app.UseExceptionHandler()` antes dos controllers.
-- Registro estruturado com `ILogger` e identificador de rastreamento (`traceId: HttpContext.TraceIdentifier`).
-- Em ambiente de produção, detalhes sensíveis de stack trace e banco de dados **não** são expostos.
+<h2 align="center">🛡️ CP4 — Health Checks, Observabilidade e Testes Automatizados</h2>
 
-#### Tabela de Mapeamento de Exceções:
-| Exceção | Status HTTP | RFC 7807 Title | Cenário |
-| --- | --- | --- | --- |
-| `ResourceNotFoundException` | **404 Not Found** | Recurso não encontrado | ID buscado não existe no banco |
-| `KeyNotFoundException` | **404 Not Found** | Recurso não encontrado | Chave informada inexistente |
-| `ConflictException` | **409 Conflict** | Conflito de dados | Duplicidade de CPF, Chassi ou Nome único |
-| `DomainException` | **400 Bad Request** | Violação de regra de negócio | Regra de negócio ou invariante violada |
-| `ArgumentException` | **400 Bad Request** | Parâmetro inválido | Argumentos incorretos fornecidos |
-| `Exception` (inesperada) | **500 Internal Server Error** | Erro interno no servidor | Falhas não tratadas (stack oculta fora de Dev) |
+### 1. Health Checks Operacionais (`GET /health`)
+A API expõe o endpoint **`GET /health`** com um **Response Writer JSON customizado** que detalha o status de todos os componentes essenciais:
 
-#### Exemplo de Resposta de Erro (RFC 7807):
+* **Checks Registrados:**
+  1. **`self`**: Verifica se o processo da aplicação ASP.NET Core está ativo e respondendo (`HealthCheckResult.Healthy`).
+  2. **`database`**: Verifica a conectividade real com o banco de dados via `AddDbContextCheck<ApplicationDbContext>()` do pacote `Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore`.
+* **Mapeamento de Status HTTP:**
+  * **Healthy (200 OK):** Processo e banco operando normalmente.
+  * **Degraded (200 OK):** Aplicação serve tráfego com alertas.
+  * **Unhealthy (503 Service Unavailable):** Falha no banco de dados ou em dependências críticas.
+
+#### Exemplo de Resposta Saudável (200 OK):
 ```json
 {
-  "type": "about:blank",
-  "title": "Recurso não encontrado",
-  "status": 404,
-  "detail": "Cliente com identificador '00000000-0000-0000-0000-000000000000' não foi encontrado(a).",
-  "instance": "/api/clientes/00000000-0000-0000-0000-000000000000",
-  "traceId": "0HNODRHBMK48B:00000001"
+  "status": "Healthy",
+  "totalDuration": "00:00:00.0250687",
+  "checks": [
+    {
+      "name": "self",
+      "status": "Healthy",
+      "duration": "00:00:00.0016803",
+      "description": "A API está operando normalmente.",
+      "tags": [ "live" ]
+    },
+    {
+      "name": "database",
+      "status": "Healthy",
+      "duration": "00:00:00.0184479",
+      "tags": [ "ready", "db" ]
+    }
+  ]
+}
+```
+
+#### Simulação de Falha de Banco (503 Service Unavailable):
+Ao simular indisponibilidade do banco de dados (ex.: parada do SGBD ou erro de arquivo SQLite), o endpoint retorna **503** indicando qual check falhou:
+```json
+{
+  "status": "Unhealthy",
+  "totalDuration": "00:00:00.0512341",
+  "checks": [
+    {
+      "name": "self",
+      "status": "Healthy",
+      "duration": "00:00:00.0012000",
+      "description": "A API está operando normalmente.",
+      "tags": [ "live" ]
+    },
+    {
+      "name": "database",
+      "status": "Unhealthy",
+      "duration": "00:00:00.0500341",
+      "tags": [ "ready", "db" ],
+      "exception": "SQLite Error 14: 'unable to open database file'."
+    }
+  ]
 }
 ```
 
 ---
 
-<h2 align="center">🎯 Preparação para o CP4</h2>
+### 2. Observabilidade e Logs Estruturados com TraceId
+A instrumentação de logs utiliza `ILogger<T>` nativo de forma estruturada:
+* **Propriedades nomeadas** nos logs de escrita (POST e PUT), registrando início e conclusão da operação.
+* **Correlação via `traceId` (`HttpContext.TraceIdentifier`):** O mesmo identificador de rastreamento é propagado no log da Controller, no log do `GlobalExceptionHandler` e no campo `traceId` da resposta RFC 7807 (`ProblemDetails`).
+* **Segurança:** Stack trace e exceções internas detalhadas só são registradas nos logs e exibidas em `ProblemDetails` durante ambiente de desenvolvimento (`Development`), mantendo a produção protegida.
 
-A arquitetura do CP3 já foi desenhada para a transição direta para o **CP4**:
-1. **Application Services Desacoplados (`ClienteService`, `VeiculoEstoqueService`, etc.):**
-   - Injetam apenas `IRepository<T>`, prontos para testes unitários com **Moq** no projeto `AutoHub.Application.Tests` (verificando chamadas `Times.Never` em falha e `Times.Once` em sucesso).
-2. **Entidades Ricas com Invariantes de Domínio:**
-   - Métodos `Validar()` com regras reais (tamanho de CPF, anos válidos, preços positivos), prontos para testes no `AutoHub.Domain.Tests` com **xUnit** (`[Fact]` para caminho feliz e `[Theory]` + `[InlineData]` para exceções de domínio).
-3. **Observabilidade Estruturada com Logs:**
-   - Controllers e `GlobalExceptionHandler` já utilizam logging estruturado com `traceId` (`HttpContext.TraceIdentifier`).
+---
+
+### 3. Pirâmide de Testes Automatizados com xUnit
+
+A suíte de testes foi estruturada em dois projetos dedicados na solution:
+
+#### A) `AutoHub.Domain.Tests` (Testes de Unidade de Domínio — Sem Mock)
+* **Objetivo:** Garantir que as entidades do domínio aplicam suas invariantes de negócio de forma isolada, sem depender de banco ou da API.
+* **Padrão AAA (Arrange, Act, Assert):**
+  * `[Fact]`: Validação do caminho feliz para entidades `Cliente` e `VeiculoEstoque`.
+  * `[Theory] + [InlineData]`: Validação de caminhos de erro com lançamento de `DomainException`:
+    * CPF com tamanho incorreto ou caracteres inválidos.
+    * E-mail malformado.
+    * Veículo com preço menor ou igual a zero.
+    * Ano de fabricação fora do intervalo aceitável.
+    * Chassi com menos de 17 caracteres.
+
+#### B) `AutoHub.Application.Tests` (Testes de Serviços de Aplicação — Com Mock)
+* **Objetivo:** Testar os casos de uso e serviços da aplicação (`ClienteService`, `VeiculoEstoqueService`) isolando a camada de persistência com o **Moq**.
+* **Cenários Testados:**
+  * **Dependência Ausente:** Ao tentar cadastrar um `VeiculoEstoque` com um `ModeloId` inexistente, o serviço lança `ResourceNotFoundException` e o mock garante que `AddAsync` e `SaveChangesAsync` **nunca foram chamados** (`Times.Never`).
+  * **Conflito de Regra:** Ao tentar cadastrar um cliente com CPF já registrado, lança `ConflictException` e garante `Times.Never` na persistência.
+  * **Caminho Feliz:** Ao criar entidades com dados válidos, garante que o repositório foi chamado para persistir exatamente uma vez (`Times.Once`).
+
+#### Execução dos Testes:
+```bash
+$ dotnet test
+Passed!  - Failed: 0, Passed: 19, Skipped: 0, Total: 19 - AutoHub.Domain.Tests.dll
+Passed!  - Failed: 0, Passed:  6, Skipped: 0, Total:  6 - AutoHub.Application.Tests.dll
+Total de testes: 25 testes aprovados (100% verde).
+```

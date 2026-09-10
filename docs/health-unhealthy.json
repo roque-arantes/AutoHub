@@ -1,0 +1,25 @@
+{
+  "status": "Unhealthy",
+  "totalDuration": "00:00:00.0512341",
+  "checks": [
+    {
+      "name": "self",
+      "status": "Healthy",
+      "duration": "00:00:00.0012000",
+      "description": "A API está operando normalmente.",
+      "tags": [
+        "live"
+      ]
+    },
+    {
+      "name": "database",
+      "status": "Unhealthy",
+      "duration": "00:00:00.0500341",
+      "tags": [
+        "ready",
+        "db"
+      ],
+      "exception": "SQLite Error 14: 'unable to open database file' / Connection string inválida ou banco inacessível."
+    }
+  ]
+}

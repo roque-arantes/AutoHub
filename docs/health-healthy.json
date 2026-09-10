@@ -1,0 +1,24 @@
+{
+  "status": "Healthy",
+  "totalDuration": "00:00:00.0250687",
+  "checks": [
+    {
+      "name": "self",
+      "status": "Healthy",
+      "duration": "00:00:00.0016803",
+      "description": "A API está operando normalmente.",
+      "tags": [
+        "live"
+      ]
+    },
+    {
+      "name": "database",
+      "status": "Healthy",
+      "duration": "00:00:00.0184479",
+      "tags": [
+        "ready",
+        "db"
+      ]
+    }
+  ]
+}

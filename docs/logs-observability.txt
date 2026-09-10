@@ -1,0 +1,43 @@
+=== EVIDÊNCIA DE OBSERVABILIDADE E LOGS ESTRUTURADOS COM TRACEID ===
+
+1. FLUXO DE ESCRITA BEM-SUCEDIDO (POST /api/marcas):
+info: AutoHub.API.Controllers.MarcasController[0]
+      Iniciando cadastro da marca 'Ford' | TraceId: 0HNOERBN4V9PL:00000001
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@__ToLower_0='?' (Size = 4)], CommandType='Text', CommandTimeout='30']
+      SELECT "m"."Id", "m"."Nome"
+      FROM "Marcas" AS "m"
+      WHERE lower("m"."Nome") = @__ToLower_0
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 4)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "Marcas" ("Id", "Nome")
+      VALUES (@p0, @p1);
+info: AutoHub.API.Controllers.MarcasController[0]
+      Marca '5a8fa958-545d-4e90-836e-b9c9817abdfb' criada com sucesso | TraceId: 0HNOERBN4V9PL:00000001
+
+---
+
+2. FLUXO DE ERRO DE NEGÓCIO COM CORRELAÇÃO DE LOG E EXCEÇÃO TRATADA:
+info: AutoHub.API.Controllers.MarcasController[0]
+      Iniciando cadastro da marca 'Ford' | TraceId: 0HNOERBN4V9PM:00000001
+fail: AutoHub.API.Exceptions.GlobalExceptionHandler[0]
+      Exceção capturada no pipeline para a requisição /api/marcas | TraceId: 0HNOERBN4V9PM:00000001
+      AutoHub.Domain.Exceptions.ConflictException: Já existe uma marca cadastrada com o nome 'Ford'.
+         at AutoHub.Application.Services.MarcaService.CreateAsync(MarcaRequestDto dto)
+         at AutoHub.API.Controllers.MarcasController.Create(MarcaRequestDto dto)
+
+---
+
+3. RESPOSTA HTTP ENTREGUE AO CLIENTE (RFC 7807 COM TRACEID):
+HTTP/1.1 409 Conflict
+Content-Type: application/problem+json
+
+{
+  "type": "about:blank",
+  "title": "Conflito de dados",
+  "status": 409,
+  "detail": "Já existe uma marca cadastrada com o nome 'Ford'.",
+  "instance": "/api/marcas",
+  "traceId": "0HNOERBN4V9PM:00000001"
+}
