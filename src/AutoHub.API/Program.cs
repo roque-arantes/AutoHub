@@ -24,6 +24,9 @@ builder.Services.AddProblemDetails();
 // Documentação Swagger / OpenAPI com XML Comments
 builder.Services.AddAutoHubSwagger();
 
+// Health Checks (disponibilidade operacional da API e banco de dados)
+builder.Services.AddAutoHubHealthChecks();
+
 // Persistência com EF Core (SQLite)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -62,7 +65,7 @@ using (var scope = app.Services.CreateScope())
 // 4. Mapeamento de Controllers
 app.MapControllers();
 
-// Health check simplificado (será evoluído no CP4 com checks de banco e JSON customizado)
-app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
+// 5. Health check com relatório JSON completo (processo self + banco de dados)
+app.MapAutoHubHealthChecks();
 
 app.Run();
