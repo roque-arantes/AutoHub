@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoHub.Domain.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoHub.Application.Tests", "tests\AutoHub.Application.Tests\AutoHub.Application.Tests.csproj", "{2251C129-A6D4-4C07-A86F-518F3015322B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoHub.Infrastructure.Tests", "tests\AutoHub.Infrastructure.Tests\AutoHub.Infrastructure.Tests.csproj", "{69EA2C40-C673-41C9-B682-B58AC5D17901}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Debug|x64.Build.0 = Debug|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Debug|x86.Build.0 = Debug|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Release|x64.ActiveCfg = Release|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Release|x64.Build.0 = Release|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Release|x86.ActiveCfg = Release|Any CPU
+		{69EA2C40-C673-41C9-B682-B58AC5D17901}.Release|x86.Build.0 = Release|Any CPU
 		{43C4078D-0616-47FF-ACFD-5529C6D10C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{43C4078D-0616-47FF-ACFD-5529C6D10C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43C4078D-0616-47FF-ACFD-5529C6D10C7E}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -101,6 +115,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{69EA2C40-C673-41C9-B682-B58AC5D17901} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{F46A8996-56B6-4F75-A373-728FAF6C24DE} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{2251C129-A6D4-4C07-A86F-518F3015322B} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
