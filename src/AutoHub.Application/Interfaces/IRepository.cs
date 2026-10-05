@@ -14,4 +14,5 @@ public interface IRepository<T> where T : BaseEntity
     void Update(T entity);
     void Delete(T entity);
     Task<int> SaveChangesAsync();
+    Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(int page, int pageSize);
 }
