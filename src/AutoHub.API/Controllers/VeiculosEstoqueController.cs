@@ -1,15 +1,22 @@
+using AutoHub.Application.DTOs;
 using AutoHub.Application.DTOs.VeiculosEstoque;
 using AutoHub.Application.Interfaces;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AutoHub.API.Controllers;
 
 /// <summary>
 /// Gerenciamento de veículos disponíveis para venda no estoque da concessionária.
+/// Recurso versionado: v1 (deprecada) e v2 (atual, com paginação).
 /// </summary>
 [ApiController]
 [Route("api/veiculos-estoque")]
+[Route("api/v{version:apiVersion}/veiculos-estoque")]
 [Produces("application/json")]
+[ApiVersion("1.0", Deprecated = true)]
+[ApiVersion("2.0")]
 public class VeiculosEstoqueController(
     IVeiculoEstoqueService veiculoService,
     ILogger<VeiculosEstoqueController> logger) : ControllerBase
@@ -17,18 +24,45 @@ public class VeiculosEstoqueController(
     private readonly IVeiculoEstoqueService _veiculoService = veiculoService;
     private readonly ILogger<VeiculosEstoqueController> _logger = logger;
 
+    // ===================== V1 — Contrato antigo (deprecado) =====================
+
     /// <summary>
-    /// Lista todos os veículos em estoque.
+    /// [v1 — DEPRECADA] Lista todos os veículos em estoque (array sem paginação).
     /// </summary>
-    /// <returns>Lista de veículos.</returns>
-    /// <response code="200">Veículos retornados com sucesso.</response>
+    /// <returns>Lista completa de veículos.</returns>
+    /// <response code="200">Veículos retornados com sucesso (array).</response>
     [HttpGet]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(IEnumerable<VeiculoEstoqueResponseDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllV1()
     {
         var veiculos = await _veiculoService.GetAllAsync();
         return Ok(veiculos);
     }
+
+    // ===================== V2 — Contrato novo (paginado) =====================
+
+    /// <summary>
+    /// [v2] Lista veículos em estoque com paginação.
+    /// </summary>
+    /// <param name="page">Número da página (padrão: 1, mínimo: 1).</param>
+    /// <param name="pageSize">Itens por página (padrão: 20, de 1 a 100).</param>
+    /// <returns>Envelope paginado com veículos.</returns>
+    /// <response code="200">Página de veículos retornada com sucesso.</response>
+    /// <response code="400">Parâmetros de paginação fora do intervalo permitido.</response>
+    [HttpGet]
+    [MapToApiVersion("2.0")]
+    [ProducesResponseType(typeof(PagedResult<VeiculoEstoqueResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAllV2(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        var result = await _veiculoService.GetPagedAsync(page, pageSize);
+        return Ok(result);
+    }
+
+    // ===================== Endpoints comuns (v1 e v2) =====================
 
     /// <summary>
     /// Obtém um veículo do estoque pelo seu identificador único.
@@ -55,7 +89,9 @@ public class VeiculosEstoqueController(
     /// <response code="400">Dados inválidos fornecidos.</response>
     /// <response code="404">Modelo informado não existe.</response>
     /// <response code="409">Conflito: Já existe um veículo com o chassi informado.</response>
+    /// <response code="429">Limite de requisições excedido.</response>
     [HttpPost]
+    [EnableRateLimiting("fixed-post")]
     [ProducesResponseType(typeof(VeiculoEstoqueResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
