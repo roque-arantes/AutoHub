@@ -5,6 +5,9 @@ using AutoHub.Application.Interfaces;
 using AutoHub.Application.Services;
 using AutoHub.Infrastructure.Data;
 using AutoHub.Infrastructure.Repositories;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +24,30 @@ builder.Services.AddControllers()
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-// Documentação Swagger / OpenAPI com XML Comments
+// Versionamento da API (CP5 — seção A)
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(2, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+        options.ApiVersionReader = ApiVersionReader.Combine(
+            new QueryStringApiVersionReader("api-version"),
+            new HeaderApiVersionReader("X-Api-Version"),
+            new UrlSegmentApiVersionReader());
+    })
+    .AddMvc()
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
+// Documentação Swagger / OpenAPI com versionamento (CP5)
 builder.Services.AddAutoHubSwagger();
+
+// Rate Limiting (CP5 — seção C)
+builder.Services.AddAutoHubRateLimiting();
 
 // Health Checks (disponibilidade operacional da API e banco de dados)
 builder.Services.AddAutoHubHealthChecks();
@@ -47,25 +72,37 @@ var app = builder.Build();
 // 1. Pipeline de tratamento global de exceções
 app.UseExceptionHandler();
 
-// 2. Swagger UI
+// 2. Rate Limiter (depois de UseExceptionHandler, antes de MapControllers)
+app.UseRateLimiter();
+
+// 3. Swagger UI com suporte a múltiplas versões
 app.UseSwagger();
-app.UseSwaggerUI(c =>
+app.UseSwaggerUI(options =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "AutoHub API v1");
-    c.RoutePrefix = "swagger";
+    var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+    {
+        var url = $"/swagger/{description.GroupName}/swagger.json";
+        var name = description.IsDeprecated
+            ? $"AutoHub API {description.GroupName} (DEPRECADA)"
+            : $"AutoHub API {description.GroupName}";
+        options.SwaggerEndpoint(url, name);
+    }
+    options.RoutePrefix = "swagger";
 });
 
-// 3. Aplicação automática das migrations do CP2 na inicialização
+// 4. Aplicação automática das migrations do CP2 na inicialização
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 }
 
-// 4. Mapeamento de Controllers
+// 5. Mapeamento de Controllers
 app.MapControllers();
 
-// 5. Health check com relatório JSON completo (processo self + banco de dados)
-app.MapAutoHubHealthChecks();
+// 6. Health check com relatório JSON completo (processo self + banco de dados)
+// DisableRateLimiting garante que /health nunca é limitado pelo rate limiter
+app.MapAutoHubHealthChecks().DisableRateLimiting();
 
 app.Run();
