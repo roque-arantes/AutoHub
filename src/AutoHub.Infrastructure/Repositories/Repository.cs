@@ -55,4 +55,19 @@ public class Repository<T>(ApplicationDbContext context) : IRepository<T> where 
     {
         return await _context.SaveChangesAsync();
     }
+
+    public async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(int page, int pageSize)
+    {
+        var query = _dbSet.AsNoTracking();
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(e => e.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
 }
