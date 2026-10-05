@@ -61,10 +61,15 @@ public class Repository<T>(ApplicationDbContext context) : IRepository<T> where 
         var query = _dbSet.AsNoTracking();
 
         var totalCount = await query.CountAsync();
+        var offset = ((long)page - 1) * pageSize;
+
+        // Uma página além do total é vazia, inclusive quando o offset excede int.MaxValue.
+        if (offset >= totalCount)
+            return (Array.Empty<T>(), totalCount);
 
         var items = await query
             .OrderBy(e => e.Id)
-            .Skip((page - 1) * pageSize)
+            .Skip((int)offset)
             .Take(pageSize)
             .ToListAsync();
 

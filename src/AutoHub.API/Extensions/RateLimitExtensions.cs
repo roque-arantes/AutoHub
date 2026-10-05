@@ -15,7 +15,7 @@ public static class RateLimitExtensions
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-            // Política fixed window para POST/PUT: 10 requisições por minuto, particionada por IP
+            // Política compartilhada entre clientes: 10 POSTs por minuto, sem fila.
             options.AddFixedWindowLimiter("fixed-post", limiterOptions =>
             {
                 limiterOptions.PermitLimit = 10;
@@ -30,7 +30,7 @@ public static class RateLimitExtensions
                 context.HttpContext.Response.ContentType = "application/problem+json";
 
                 var retryAfter = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfterValue)
-                    ? (int)retryAfterValue.TotalSeconds
+                    ? Math.Max(1, (int)Math.Ceiling(retryAfterValue.TotalSeconds))
                     : 60;
 
                 context.HttpContext.Response.Headers.RetryAfter = retryAfter.ToString();

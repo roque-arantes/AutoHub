@@ -92,6 +92,7 @@ public class VeiculosEstoqueController(
     /// <response code="429">Limite de requisições excedido.</response>
     [HttpPost]
     [EnableRateLimiting("fixed-post")]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType(typeof(VeiculoEstoqueResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
