@@ -1,0 +1,3 @@
+Validação CP5 concluída em 2026-10-05T01:20:37Z
+API temporária: http://127.0.0.1:57329
+Banco temporário descartado ao finalizar.

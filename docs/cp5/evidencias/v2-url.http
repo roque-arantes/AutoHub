@@ -1,0 +1,12 @@
+GET http://127.0.0.1:57329/api/v2/veiculos-estoque
+
+HTTP 200
+Connection: close
+Content-Type: application/json; charset=utf-8
+Date: Mon, 05 Oct 2026 01:20:35 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+api-supported-versions: 2.0
+api-deprecated-versions: 1.0
+
+{"page":1,"pageSize":20,"totalItems":5,"totalPages":1,"hasPrevious":false,"hasNext":false,"items":[{"id":"045882cb-cbc0-447e-bbb7-de62d576da87","anoFabricacao":2023,"cor":"Prata","kilometragem":100,"preco":120000,"status":"Disponivel","chassis":"CP500000000000004","modeloId":"ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"},{"id":"a4e9c065-f51b-4ec5-b79a-ef8ac8eb9c76","anoFabricacao":2023,"cor":"Prata","kilometragem":15000,"preco":135000,"status":"Disponivel","chassis":"9BWZZZ377VT004251","modeloId":"ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"},{"id":"b606c61e-4a91-4029-b86a-9c0959141fdd","anoFabricacao":2023,"cor":"Prata","kilometragem":100,"preco":120000,"status":"Disponivel","chassis":"CP500000000000002","modeloId":"ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"},{"id":"b6a0e253-4f84-4911-bcc8-839228adfbde","anoFabricacao":2023,"cor":"Prata","kilometragem":100,"preco":120000,"status":"Disponivel","chassis":"CP500000000000003","modeloId":"ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"},{"id":"c97f07e0-1c9c-48f1-b8cb-2732caada66c","anoFabricacao":2023,"cor":"Prata","kilometragem":100,"preco":120000,"status":"Disponivel","chassis":"CP500000000000001","modeloId":"ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"}]}

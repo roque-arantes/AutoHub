@@ -1,0 +1,7 @@
+{
+  "title": "Recurso não encontrado",
+  "status": 404,
+  "detail": "VeiculoEstoque com identificador 'fb96f655-2d7a-4858-832e-570c311ca955' não foi encontrado(a).",
+  "instance": "/api/veiculos-estoque/fb96f655-2d7a-4858-832e-570c311ca955",
+  "traceId": "0HNP2FRDU751P:00000001"
+}

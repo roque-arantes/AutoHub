@@ -1,0 +1,7 @@
+{
+  "title": "Conflito de dados",
+  "status": 409,
+  "detail": "Já existe um veículo cadastrado com o chassi 'CP500000000000001'.",
+  "instance": "/api/veiculos-estoque",
+  "traceId": "0HNP2FRDU7522:00000001"
+}

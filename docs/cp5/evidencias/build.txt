@@ -1,0 +1,15 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  AutoHub.Domain -> /home/roque/RiderProjects/AutoHub/src/AutoHub.Domain/bin/Debug/net9.0/AutoHub.Domain.dll
+  AutoHub.Application -> /home/roque/RiderProjects/AutoHub/src/AutoHub.Application/bin/Debug/net9.0/AutoHub.Application.dll
+  AutoHub.Domain.Tests -> /home/roque/RiderProjects/AutoHub/tests/AutoHub.Domain.Tests/bin/Debug/net9.0/AutoHub.Domain.Tests.dll
+  AutoHub.Infrastructure -> /home/roque/RiderProjects/AutoHub/src/AutoHub.Infrastructure/bin/Debug/net9.0/AutoHub.Infrastructure.dll
+  AutoHub.Application.Tests -> /home/roque/RiderProjects/AutoHub/tests/AutoHub.Application.Tests/bin/Debug/net9.0/AutoHub.Application.Tests.dll
+  AutoHub.Infrastructure.Tests -> /home/roque/RiderProjects/AutoHub/tests/AutoHub.Infrastructure.Tests/bin/Debug/net9.0/AutoHub.Infrastructure.Tests.dll
+  AutoHub.API -> /home/roque/RiderProjects/AutoHub/src/AutoHub.API/bin/Debug/net9.0/AutoHub.API.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.13

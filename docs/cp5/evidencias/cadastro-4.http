@@ -1,0 +1,16 @@
+POST http://127.0.0.1:57329/api/veiculos-estoque
+Content-Type: application/json
+
+{"anoFabricacao": 2023, "cor": "Prata", "kilometragem": 100, "preco": 120000, "status": "Disponivel", "modeloId": "ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2", "chassis": "CP500000000000004"}
+
+HTTP 201
+Connection: close
+Content-Type: application/json; charset=utf-8
+Date: Mon, 05 Oct 2026 01:20:35 GMT
+Server: Kestrel
+Location: http://127.0.0.1:57329/api/veiculos-estoque/045882cb-cbc0-447e-bbb7-de62d576da87
+Transfer-Encoding: chunked
+api-supported-versions: 2.0
+api-deprecated-versions: 1.0
+
+{"id":"045882cb-cbc0-447e-bbb7-de62d576da87","anoFabricacao":2023,"cor":"Prata","kilometragem":100,"preco":120000,"status":"Disponivel","chassis":"CP500000000000004","modeloId":"ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"}

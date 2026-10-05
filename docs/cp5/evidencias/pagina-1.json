@@ -1,0 +1,30 @@
+{
+  "page": 1,
+  "pageSize": 2,
+  "totalItems": 5,
+  "totalPages": 3,
+  "hasPrevious": false,
+  "hasNext": true,
+  "items": [
+    {
+      "id": "045882cb-cbc0-447e-bbb7-de62d576da87",
+      "anoFabricacao": 2023,
+      "cor": "Prata",
+      "kilometragem": 100,
+      "preco": 120000,
+      "status": "Disponivel",
+      "chassis": "CP500000000000004",
+      "modeloId": "ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"
+    },
+    {
+      "id": "a4e9c065-f51b-4ec5-b79a-ef8ac8eb9c76",
+      "anoFabricacao": 2023,
+      "cor": "Prata",
+      "kilometragem": 15000,
+      "preco": 135000,
+      "status": "Disponivel",
+      "chassis": "9BWZZZ377VT004251",
+      "modeloId": "ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"
+    }
+  ]
+}

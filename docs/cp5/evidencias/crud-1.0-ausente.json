@@ -1,0 +1,7 @@
+{
+  "title": "Recurso não encontrado",
+  "status": 404,
+  "detail": "VeiculoEstoque com identificador '262feece-c1a3-48e8-bf6a-158a57ce5add' não foi encontrado(a).",
+  "instance": "/api/veiculos-estoque/262feece-c1a3-48e8-bf6a-158a57ce5add",
+  "traceId": "0HNP2FRDU751K:00000001"
+}

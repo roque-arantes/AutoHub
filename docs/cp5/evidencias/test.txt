@@ -1,0 +1,21 @@
+Test run for /home/roque/RiderProjects/AutoHub/tests/AutoHub.Domain.Tests/bin/Debug/net9.0/AutoHub.Domain.Tests.dll (.NETCoreApp,Version=v9.0)
+Test run for /home/roque/RiderProjects/AutoHub/tests/AutoHub.Application.Tests/bin/Debug/net9.0/AutoHub.Application.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.1 (x64)
+
+Test run for /home/roque/RiderProjects/AutoHub/tests/AutoHub.Infrastructure.Tests/bin/Debug/net9.0/AutoHub.Infrastructure.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.1 (x64)
+
+VSTest version 17.14.1 (x64)
+
+Starting test execution, please wait...
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    19, Skipped:     0, Total:    19, Duration: 33 ms - AutoHub.Domain.Tests.dll (net9.0)
+
+Passed!  - Failed:     0, Passed:    16, Skipped:     0, Total:    16, Duration: 91 ms - AutoHub.Application.Tests.dll (net9.0)
+
+Passed!  - Failed:     0, Passed:     6, Skipped:     0, Total:     6, Duration: 400 ms - AutoHub.Infrastructure.Tests.dll (net9.0)

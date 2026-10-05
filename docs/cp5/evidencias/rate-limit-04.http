@@ -1,0 +1,18 @@
+POST http://127.0.0.1:57329/api/veiculos-estoque
+Content-Type: application/json
+
+{"anoFabricacao": 2023, "cor": "Prata", "kilometragem": 100, "preco": 120000, "status": "Disponivel", "modeloId": "ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2", "chassis": "CP500000000000001"}
+
+HTTP 409
+Connection: close
+Content-Type: application/problem+json
+Date: Mon, 05 Oct 2026 01:20:36 GMT
+Server: Kestrel
+Cache-Control: no-cache,no-store
+Expires: -1
+Pragma: no-cache
+Transfer-Encoding: chunked
+api-supported-versions: 2.0
+api-deprecated-versions: 1.0
+
+{"title":"Conflito de dados","status":409,"detail":"Já existe um veículo cadastrado com o chassi 'CP500000000000001'.","instance":"/api/veiculos-estoque","traceId":"0HNP2FRDU7522:00000001"}

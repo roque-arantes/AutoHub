@@ -1,0 +1,10 @@
+GET http://127.0.0.1:57329/api/marcas
+
+HTTP 200
+Connection: close
+Content-Type: application/json; charset=utf-8
+Date: Mon, 05 Oct 2026 01:20:36 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+[{"id":"78b0a81b-2f83-4b1c-afbd-82a8bd98aa09","nome":"Honda"},{"id":"c87d5729-9b60-4f30-960e-58cffadccdbb","nome":"Toyota"}]

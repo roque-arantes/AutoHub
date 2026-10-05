@@ -1,0 +1,7 @@
+{
+  "title": "Parâmetro inválido",
+  "status": 400,
+  "detail": "O parâmetro 'page' deve ser maior ou igual a 1.",
+  "instance": "/api/veiculos-estoque",
+  "traceId": "0HNP2FRDU751B:00000001"
+}

@@ -1,0 +1,21 @@
+POST http://127.0.0.1:57329/api/veiculos-estoque
+Content-Type: application/json
+
+{"anoFabricacao": 2023, "cor": "Prata", "kilometragem": 100, "preco": 120000, "status": "Disponivel", "modeloId": "ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2", "chassis": "CP500000000000001"}
+
+HTTP 429
+Connection: close
+Content-Type: application/problem+json
+Date: Mon, 05 Oct 2026 01:20:36 GMT
+Server: Kestrel
+Retry-After: 60
+Transfer-Encoding: chunked
+
+{
+  "type": "https://tools.ietf.org/html/rfc6585#section-4",
+  "title": "Limite de requisi\u00E7\u00F5es excedido",
+  "status": 429,
+  "detail": "Voc\u00EA excedeu o limite de requisi\u00E7\u00F5es. Tente novamente em 60 segundo(s).",
+  "instance": "/api/veiculos-estoque",
+  "retryAfterSeconds": 60
+}

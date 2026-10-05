@@ -1,0 +1,10 @@
+{
+  "id": "fb96f655-2d7a-4858-832e-570c311ca955",
+  "anoFabricacao": 2023,
+  "cor": "Azul",
+  "kilometragem": 100,
+  "preco": 120000,
+  "status": "Disponivel",
+  "chassis": "CP500000000000012",
+  "modeloId": "ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"
+}

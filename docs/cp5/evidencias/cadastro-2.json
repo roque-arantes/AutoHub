@@ -1,0 +1,10 @@
+{
+  "id": "b606c61e-4a91-4029-b86a-9c0959141fdd",
+  "anoFabricacao": 2023,
+  "cor": "Prata",
+  "kilometragem": 100,
+  "preco": 120000,
+  "status": "Disponivel",
+  "chassis": "CP500000000000002",
+  "modeloId": "ab2c4025-d6b2-4cdb-ae1a-43392d9b56a2"
+}

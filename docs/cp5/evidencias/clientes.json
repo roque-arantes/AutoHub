@@ -1,0 +1,14 @@
+[
+  {
+    "id": "70222dd5-e15d-4433-86c5-65a9d8172413",
+    "nome": "Ana Souza",
+    "cpf": "12345678901",
+    "telefone": "11999999999",
+    "email": "ana.souza@email.com",
+    "logradouro": "Rua das Flores",
+    "numero": "123",
+    "cidade": "Sao Paulo",
+    "estado": "SP",
+    "cep": "01000-000"
+  }
+]

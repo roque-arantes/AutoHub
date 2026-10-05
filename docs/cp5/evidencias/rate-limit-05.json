@@ -1,0 +1,8 @@
+{
+  "type": "https://tools.ietf.org/html/rfc6585#section-4",
+  "title": "Limite de requisições excedido",
+  "status": 429,
+  "detail": "Você excedeu o limite de requisições. Tente novamente em 60 segundo(s).",
+  "instance": "/api/veiculos-estoque",
+  "retryAfterSeconds": 60
+}

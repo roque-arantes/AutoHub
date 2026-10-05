@@ -1,7 +1,7 @@
 <h1 align="center">AutoHub — Concessionária & Oficina Mecânica</h1>
 
 <p align="center">
-  Projeto desenvolvido para as disciplinas de CP1, CP2, CP3 e CP4 — FIAP
+  Projeto desenvolvido para as disciplinas de CP1, CP2, CP3, CP4 e CP5 — FIAP
 </p>
 
 ---
@@ -113,10 +113,11 @@ AutoHub/
 │   └── AutoHub.API/                → Controllers, Swagger, Health Checks e Exception Handler
 │       ├── Controllers/            → ClientesController, MarcasController, VeiculosEstoqueController, SeedController
 │       ├── Exceptions/             → GlobalExceptionHandler (IExceptionHandler + RFC 7807)
-│       └── Extensions/             → SwaggerExtensions, HealthCheckExtensions
+│       └── Extensions/             → SwaggerExtensions, HealthCheckExtensions, RateLimitExtensions
 ├── tests/
 │   ├── AutoHub.Domain.Tests/       → Testes unitários do domínio sem mock (xUnit, Fact, Theory)
-│   └── AutoHub.Application.Tests/  → Testes de serviços de aplicação com Mock de repositório (Moq)
+│   ├── AutoHub.Application.Tests/  → Testes de serviços de aplicação com Mock de repositório (Moq)
+│   └── AutoHub.Infrastructure.Tests/ → Paginação com SQLite em memória
 └── README.md
 ```
 
@@ -130,6 +131,7 @@ AutoHub/
 
 ### Execução da API
 ```bash
+# Na raiz do repositório AutoHub
 # 1. Restaurar dependências
 dotnet restore
 
@@ -175,7 +177,7 @@ A API opera sobre DTOs de entrada e saída, desacoplada do `DbContext`:
 | **Health** | GET | `/health` | Relatório de disponibilidade operacional da API e banco |
 
 ### 2. Swagger Completo com Comentários XML
-- Metadados corporativos, versionamento `v1` e documentação de ações e schemas.
+- Metadados corporativos, documentos `v1` e `v2` e documentação de ações e schemas (ver CP5).
 - XML Comments ativados via `<GenerateDocumentationFile>true</GenerateDocumentationFile>` e vinculados ao Swagger.
 - Respostas HTTP tipadas com `[ProducesResponseType]` (200, 201, 204, 400, 404, 409, 500).
 
@@ -292,10 +294,126 @@ A suíte de testes foi estruturada em dois projetos dedicados na solution:
   * **Conflito de Regra:** Ao tentar cadastrar um cliente com CPF já registrado, lança `ConflictException` e garante `Times.Never` na persistência.
   * **Caminho Feliz:** Ao criar entidades com dados válidos, garante que o repositório foi chamado para persistir exatamente uma vez (`Times.Once`).
 
-#### Execução dos Testes:
-```bash
+#### Resultado histórico da CP4 (anterior à CP5):
+```text
 $ dotnet test
 Passed!  - Failed: 0, Passed: 19, Skipped: 0, Total: 19 - AutoHub.Domain.Tests.dll
 Passed!  - Failed: 0, Passed:  6, Skipped: 0, Total:  6 - AutoHub.Application.Tests.dll
 Total de testes: 25 testes aprovados (100% verde).
 ```
+
+
+---
+
+<h2 align="center">📌 CP5 — Versionamento, Paginação e Rate Limit</h2>
+
+### Contratos e seleção de versão
+
+O recurso versionado é **Veículos em Estoque** (`/api/veiculos-estoque`). A v1
+está **deprecada**, mas mantém o array completo sem paginação. A v2 devolve um
+envelope paginado. Ambas usam o mesmo `VeiculoEstoqueService`.
+
+| Chamada | Contrato |
+| --- | --- |
+| `http://localhost:5017/api/veiculos-estoque?api-version=1.0` | v1: array completo |
+| `http://localhost:5017/api/veiculos-estoque?api-version=2.0` | v2: envelope paginado |
+| `http://localhost:5017/api/veiculos-estoque` | Sem versão: **2.0** |
+| `http://localhost:5017/api/v1/veiculos-estoque` | v1 por segmento de URL |
+| `http://localhost:5017/api/v2/veiculos-estoque` | v2 por segmento de URL |
+
+Também é possível selecionar a versão pelo header:
+
+```bash
+curl -i 'http://localhost:5017/api/veiculos-estoque?api-version=1.0'
+curl -i -H 'X-Api-Version: 1.0' http://localhost:5017/api/veiculos-estoque
+curl -i http://localhost:5017/api/veiculos-estoque
+```
+
+As respostas do recurso anunciam `api-supported-versions: 2.0` e
+`api-deprecated-versions: 1.0`. Use uma das formas de seleção por requisição.
+
+O Swagger em `http://localhost:5017/swagger` permite escolher **v1 (DEPRECADA)**
+e **v2**. Os documentos ficam em `/swagger/v1/swagger.json` e
+`/swagger/v2/swagger.json`. Clientes, Marcas e Seed são `[ApiVersionNeutral]`,
+continuam chamáveis sem versão e aparecem nos documentos.
+
+`GET /api/veiculos-estoque/{id}`, `POST /api/veiculos-estoque`,
+`PUT /api/veiculos-estoque/{id}` e `DELETE /api/veiculos-estoque/{id}` são
+compartilhados pelas duas versões. Para corrigir o fluxo de escrita, as rotas
+sem versão continuam funcionando na v2; `?api-version=1.0` seleciona a v1.
+O GET por ID não é paginado.
+
+### Paginação da v2
+
+| Parâmetro | Padrão | Valores aceitos |
+| --- | --- | --- |
+| `page` | 1 | Inteiro de 1 até `2147483647` |
+| `pageSize` | 20 | Inteiro de 1 a 100 |
+
+```bash
+curl -i 'http://localhost:5017/api/veiculos-estoque?page=1&pageSize=2'
+curl -i 'http://localhost:5017/api/veiculos-estoque?page=2&pageSize=2'
+curl -i 'http://localhost:5017/api/veiculos-estoque?page=0'
+curl -i 'http://localhost:5017/api/veiculos-estoque?pageSize=9999'
+```
+
+Exemplo ilustrativo de página além do total, para cinco veículos e `pageSize=2`
+(as respostas reais são coletadas em `docs/cp5/evidencias/`):
+
+```json
+{
+  "page": 4,
+  "pageSize": 2,
+  "totalItems": 5,
+  "totalPages": 3,
+  "hasPrevious": true,
+  "hasNext": false,
+  "items": []
+}
+```
+
+`totalPages` é o teto de `totalItems / pageSize`. Página além do total retorna
+**200**, `items: []` e os totais preservados. Banco vazio tem `totalPages: 0`.
+`page < 1` ou `pageSize` fora de 1–100 retorna **400**, com Problem Details e
+mensagem indicando o parâmetro inválido. A Application valida os intervalos;
+o repositório executa `CountAsync`, `OrderBy(Id)`, `Skip` e `Take` antes de
+`ToListAsync`. O deslocamento usa `long` para evitar overflow em páginas enormes.
+A v1 ignora parâmetros de paginação e continua retornando a lista completa.
+
+### Rate limit
+
+A política nativa **fixed window** `fixed-post` limita exclusivamente
+**POST `/api/veiculos-estoque`** (incluindo suas versões e rotas alternativas):
+**10 requisições por janela de 1 minuto**, sem fila. O limite é compartilhado
+entre os clientes da instância da API; não é separado por IP. Requisições
+admitidas também consomem a cota quando terminam em erro de validação/conflito.
+
+Ao esgotar a cota, a API retorna **429**, `Content-Type: application/problem+json`,
+corpo JSON com `status: 429` e header **`Retry-After`** em segundos inteiros,
+arredondados para cima. Aguarde esse tempo antes de tentar novamente.
+GETs de listagem, PUT e DELETE não recebem essa política.
+**`GET http://localhost:5017/health` está explicitamente fora do limite** e
+continua respondendo 200 após o 429 quando processo e banco estão saudáveis.
+
+Para demonstrar manualmente no Swagger, execute `POST /api/seed`, consulte a
+listagem para obter um `modeloId`, e envie um veículo válido no POST. Repita o
+POST até receber 429; após o primeiro cadastro, repetir o mesmo chassi produz
+409 e ainda consome a cota. Consulte `/health` logo após o 429.
+
+### Testes e evidências
+
+```bash
+dotnet build
+dotnet test
+
+```
+
+A solução contém **41 casos definidos e aprovados**: 19 de Domain, 16 de
+Application e 6 de Infrastructure. Os últimos usam SQLite em memória para
+testar ordenação, páginas sem sobreposição, totais, banco vazio e regressão de
+overflow. A execução validada está registrada em
+`docs/cp5/evidencias/test.txt`.
+
+A validação foi concluída com sucesso e publicou os arquivos reais em
+`docs/cp5/evidencias/`. O inventário das evidências está em
+[docs/cp5/README.md](docs/cp5/README.md).
