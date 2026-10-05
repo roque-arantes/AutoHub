@@ -1,3 +1,4 @@
+using AutoHub.Application.DTOs;
 using AutoHub.Application.DTOs.VeiculosEstoque;
 using AutoHub.Application.Interfaces;
 using AutoHub.Domain.Entities;
@@ -16,6 +17,26 @@ public class VeiculoEstoqueService(
     {
         var veiculos = await _veiculoRepository.GetAllAsync();
         return veiculos.Select(MapToResponseDto);
+    }
+
+    public async Task<PagedResult<VeiculoEstoqueResponseDto>> GetPagedAsync(int page, int pageSize)
+    {
+        if (page < 1)
+            throw new ArgumentException("O parâmetro 'page' deve ser maior ou igual a 1.");
+
+        if (pageSize < 1 || pageSize > 100)
+            throw new ArgumentException("O parâmetro 'pageSize' deve estar entre 1 e 100.");
+
+        var (items, totalCount) = await _veiculoRepository.GetPagedAsync(page, pageSize);
+
+        return new PagedResult<VeiculoEstoqueResponseDto>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = totalCount,
+            TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
+            Items = items.Select(MapToResponseDto)
+        };
     }
 
     public async Task<VeiculoEstoqueResponseDto> GetByIdAsync(Guid id)
