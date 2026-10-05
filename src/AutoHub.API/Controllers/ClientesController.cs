@@ -1,5 +1,6 @@
 using AutoHub.Application.DTOs.Clientes;
 using AutoHub.Application.Interfaces;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoHub.API.Controllers;
@@ -8,6 +9,7 @@ namespace AutoHub.API.Controllers;
 /// Gerenciamento de clientes da concessionária e oficina mecânica.
 /// </summary>
 [ApiController]
+[ApiVersionNeutral]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class ClientesController(

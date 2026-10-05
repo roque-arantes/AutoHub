@@ -1,5 +1,6 @@
 using AutoHub.Application.DTOs.Marcas;
 using AutoHub.Application.Interfaces;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoHub.API.Controllers;
@@ -8,6 +9,7 @@ namespace AutoHub.API.Controllers;
 /// Gerenciamento de fabricantes e marcas de veículos.
 /// </summary>
 [ApiController]
+[ApiVersionNeutral]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class MarcasController(
